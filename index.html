@@ -2,62 +2,60 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>오늘의 할 일</title>
-
+  <title>Todolist</title>
   <style>
     * {
       box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
     }
 
     body {
       margin: 0;
-      height: 100vh;
-      font-family: Arial, sans-serif;
+      min-height: 100vh;
       background: linear-gradient(135deg, #667eea, #764ba2);
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    .todo-app {
+    .container {
       background: white;
-      width: 360px;
-      padding: 24px;
+      width: 350px;
+      padding: 25px;
       border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 6px;
-    }
-
-    .date {
-      text-align: center;
-      color: #666;
-      font-size: 14px;
       margin-bottom: 20px;
+      color: #333;
     }
 
     .input-box {
       display: flex;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .input-box input {
+    input[type="text"] {
       flex: 1;
       padding: 10px;
       border-radius: 8px;
-      border: 1px solid #ddd;
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
 
-    .input-box button {
+    button {
       padding: 10px 14px;
       border: none;
       border-radius: 8px;
       background: #667eea;
       color: white;
       cursor: pointer;
+    }
+
+    button:hover {
+      background: #5a67d8;
     }
 
     ul {
@@ -69,87 +67,72 @@
     li {
       display: flex;
       align-items: center;
-      background: #f5f5f5;
       padding: 10px;
       border-radius: 8px;
+      background: #f5f5f5;
       margin-bottom: 10px;
     }
 
-    li span {
-      margin-left: 10px;
-      font-size: 14px;
-    }
-
-    li.completed span {
-      text-decoration: line-through;
-      color: #999;
+    li input {
+      margin-right: 10px;
+      cursor: pointer;
     }
   </style>
 </head>
-
 <body>
-  <div class="todo-app">
-    <h1>오늘의 할 일</h1>
-    <div class="date" id="today"></div>
+  <div class="container">
+    <h1>📝 Todolist</h1>
 
     <div class="input-box">
-      <input type="text" id="todoInput" placeholder="오늘 할 일을 입력하세요" />
-      <button onclick="addTodo()">등록</button>
+      <input type="text" id="todoInput" placeholder="오늘의 할 일" />
+      <button onclick="addTodo()">추가</button>
     </div>
 
     <ul id="todoList"></ul>
   </div>
 
   <script>
+    const todoInput = document.getElementById("todoInput");
     const todoList = document.getElementById("todoList");
-    const input = document.getElementById("todoInput");
 
-    // 오늘 날짜 표시
-    const today = new Date();
-    document.getElementById("today").innerText =
-      today.toLocaleDateString("ko-KR");
-
-    // 저장된 할 일 불러오기
     let todos = JSON.parse(localStorage.getItem("todos")) || [];
-    renderTodos();
 
-    function addTodo() {
-      const text = input.value.trim();
-      if (!text) return;
-
-      todos.push(text);
-      saveTodos();
-      renderTodos();
-      input.value = "";
+    function saveTodos() {
+      localStorage.setItem("todos", JSON.stringify(todos));
     }
 
     function renderTodos() {
       todoList.innerHTML = "";
-
       todos.forEach((todo, index) => {
         const li = document.createElement("li");
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-
         checkbox.addEventListener("change", () => {
           todos.splice(index, 1);
           saveTodos();
           renderTodos();
         });
 
-        const span = document.createElement("span");
-        span.innerText = todo;
-
         li.appendChild(checkbox);
-        li.appendChild(span);
+        li.appendChild(document.createTextNode(todo));
         todoList.appendChild(li);
       });
     }
 
-    function saveTodos() {
-      localStorage.setItem("todos", JSON.stringify(todos));
+    function addTodo() {
+      const text = todoInput.value.trim();
+      if (text === "") return;
+
+      todos.push(text);
+      todoInput.value = "";
+      saveTodos();
+      renderTodos();
     }
+
+    renderTodos();
   </script>
 </body>
 </html>
+
+
