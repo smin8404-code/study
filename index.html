@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>Todolist</title>
+  <title>오늘의 할 일</title>
 
   <style>
     * {
@@ -12,15 +12,144 @@
     body {
       margin: 0;
       height: 100vh;
-      font-family: "Pretendard", Arial, sans-serif;
+      font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #667eea, #764ba2);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
     }
 
     .todo-app {
       background: white;
       width: 360px;
       padding: 24px;
-      border
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .date {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .input-box {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-box input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .input-box button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #667eea;
+      color: white;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    li span {
+      margin-left: 10px;
+      font-size: 14px;
+    }
+
+    li.completed span {
+      text-decoration: line-through;
+      color: #999;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="todo-app">
+    <h1>오늘의 할 일</h1>
+    <div class="date" id="today"></div>
+
+    <div class="input-box">
+      <input type="text" id="todoInput" placeholder="오늘 할 일을 입력하세요" />
+      <button onclick="addTodo()">등록</button>
+    </div>
+
+    <ul id="todoList"></ul>
+  </div>
+
+  <script>
+    const todoList = document.getElementById("todoList");
+    const input = document.getElementById("todoInput");
+
+    // 오늘 날짜 표시
+    const today = new Date();
+    document.getElementById("today").innerText =
+      today.toLocaleDateString("ko-KR");
+
+    // 저장된 할 일 불러오기
+    let todos = JSON.parse(localStorage.getItem("todos")) || [];
+    renderTodos();
+
+    function addTodo() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      todos.push(text);
+      saveTodos();
+      renderTodos();
+      input.value = "";
+    }
+
+    function renderTodos() {
+      todoList.innerHTML = "";
+
+      todos.forEach((todo, index) => {
+        const li = document.createElement("li");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+
+        checkbox.addEventListener("change", () => {
+          todos.splice(index, 1);
+          saveTodos();
+          renderTodos();
+        });
+
+        const span = document.createElement("span");
+        span.innerText = todo;
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        todoList.appendChild(li);
+      });
+    }
+
+    function saveTodos() {
+      localStorage.setItem("todos", JSON.stringify(todos));
+    }
+  </script>
+</body>
+</html>
